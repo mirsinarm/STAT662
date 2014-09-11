@@ -55,10 +55,11 @@ def main():
   # 4.8 GB (60%) = 6,000,000 rows
   # 16 GB (200%) = 20,000,000 rows
   makeRows(1000, "f0_1000.txt")
-  makeRows(1000000*mult, "f1_%d.txt" % 1000000*mult)
-  makeRows(2000000*mult, "f1_%d.txt" % 2000000*mult)
-#  makeRows(6000000*mult, "f1_%d.txt" % 6000000*mult)
-#  makeRows(20000000*mult, "f1_%d.txt" % 20000000*mult)
+  makeRows(100000*mult, "f1_%d.txt" % (100000*mult)) # 1%
+  makeRows(1000000*mult, "f2_%d.txt" % (1000000*mult)) # 10%
+  makeRows(2000000*mult, "f3_%d.txt" % (2000000*mult)) # 20%
+  makeRows(6000000*mult, "f4_%d.txt" % (6000000*mult)) # 60%
+  makeRows(20000000*mult, "f5_%d.txt" % (20000000*mult)) # 200%
 
 if __name__ == '__main__':
   main()
