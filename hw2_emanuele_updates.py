@@ -46,7 +46,8 @@ def makeRows(numrows, filename):
 # the part that says what to do when the file is executed
 def main():
   args = sys.argv[1:]
-  mult = int(args[0])
+  mult = raw_input("Enter 2 if RAM is 8 GB, 1 if 4 GB, 4 if 16 GB ")
+  mult = int(2*mult)
   # making a multiplier to make it easy to try out different line lengths
   # based on Jay's:
   # when mult = 1, the following rows are generated:
