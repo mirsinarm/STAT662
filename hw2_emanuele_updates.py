@@ -10,11 +10,12 @@ import sys
 import time
 import random
 import string
+import csv
 
 # create a function to generate files with, say, 1000 lines
 def makeRows(numrows, filename):
   start = time.time()
-
+  
   # make the sets of all letters more accessible:
   letters = list(string.ascii_lowercase)
   LETTERS = list(string.ascii_uppercase)
@@ -45,14 +46,19 @@ def makeRows(numrows, filename):
 # the part that says what to do when the file is executed
 def main():
   args = sys.argv[1:]
-#  if len(args) != 2:
-#     print "Usage:  --numrows --outfile"
-  
-#  numrows = args[0]
-#  outfile = args[1]
-  
-  makeRows(1000, "1000.txt")
-  makeRows(10000, "10000.txt")
+  mult = int(args[0])
+  # making a multiplier to make it easy to try out different line lengths
+  # based on Jay's:
+  # when mult = 1, the following rows are generated:
+  # 800 MB (10%) = 1,000,000 rows
+  # 1.6 GB (20%) = 2,000,000 rows
+  # 4.8 GB (60%) = 6,000,000 rows
+  # 16 GB (200%) = 20,000,000 rows
+  makeRows(1000, "f0_1000.txt")
+  makeRows(1000000*mult, "f1_%d.txt" % 1000000*mult)
+  makeRows(2000000*mult, "f1_%d.txt" % 2000000*mult)
+#  makeRows(6000000*mult, "f1_%d.txt" % 6000000*mult)
+#  makeRows(20000000*mult, "f1_%d.txt" % 20000000*mult)
 
 if __name__ == '__main__':
   main()
