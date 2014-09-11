@@ -23,7 +23,7 @@ def makeRows(numrows, filename):
   # write the new chunk of rows:
   ### NOTE:  should really check to see if that file exists already so it doesn't overwrite!!!
   with open(filename, 'a') as csvfile:
-    write = csv.writer(csvfile)   #ADDED THIS LINE
+    write = csv.writer(csvfile)
     
     for i in range(numrows):
   
@@ -36,9 +36,9 @@ def makeRows(numrows, filename):
       charlen = random.randint(1, 10) # generates random integer, includes boundaries
       characters = ''.join([random.choice(letters) for x in range(charlen)])
 
-      write.writerow(numerics + [integer] + [factor] + [characters])  #CHANGED THIS TO ALL LISTS
+      write.writerow(numerics + [integer] + [factor] + [characters]) # combines components as lists
 
-  print "Time to generate 10000 rows: ", time.time()-start, "sec"
+  print "Time to generate %d rows: " % numrows, time.time()-start, "sec"
 
   return
 
