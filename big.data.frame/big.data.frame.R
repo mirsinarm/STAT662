@@ -175,6 +175,7 @@ setMethod('dim', signature(x="big.data.frame"),
 setMethod('length', signature(x="big.data.frame"),
   function(x) return(ncol(x)))
 
+<<<<<<< HEAD
 #' @title length functionality for a big.data.frame
 #' @rdname big.data.frame-methods
 #' @param x a big.data.frame
@@ -224,6 +225,82 @@ tail.big.data.frame <- function(x, n=6) {
   }
 }
 
+=======
+#' @title print summary of the big data frame
+#' @rdname big.data.frame-methods
+#' @author Rose Brewin
+#' @exportMethod summary
+setMethod("summary", signature=(object="big.data.frame"), function(object, ...) {
+  cat("Are you sure you want to calculate summaries of big objects?")
+  if (interactive()) {
+    ANSWER <- readline("Continue with summary (Y/n)? ")
+    if (substring(ANSWER, 1, 1) != "Y")
+      stop("Terminated summary.")
+  } 
+  return(summary(object[1], ...))
+})
+
+#' @title print structure of the big data frame
+#' @rdname big.data.frame-methods
+#' @author Rose Brewin
+#' @exportMethod str
+setMethod('str', signature=(object="big.data.frame"), function (object, ...) 
+{
+  if (!is.big.data.frame(object)) {
+    stop("str.big.data.frame() called with non-big.data.frame")
+    # object <- data.frame(object) Do we want to have coerce functionality?
+  }
+  cl <- oldClass(object)
+  cl <- cl[cl != "big.data.frame"]
+  if (0 < length(cl)) 
+    cat("Classes", paste(sQuote(cl), collapse = ", "), "and ")
+  cat("'big.data.frame':\t", nrow(object), " obs. of  ", (p <- length(object)), 
+      " variable", if (p != 1) 
+        "s", if (p > 0) 
+          ":", "\n", sep = "")
+  #    if (length(l <- list(...)) && any("give.length" == names(l))) 
+  #      invisible(NextMethod("str",  ...))
+  #    else 
+  #      invisible(NextMethod("str", object=object@data, give.length = FALSE))
+})
+
+
+#' @title names functionality for a big.data.frame
+#' @rdname big.data.frame-methods
+#' @author Rose Brewin
+#' @exportMethod names
+setMethod('names', signature(x="big.data.frame"),
+          function(x) return(names(x@data)))
+
+#' @title set the names of a big.data.frame 
+#' @rdname big.data.frame-methods
+#' @author Rose Brewin
+#' @exportMethod names<-
+setMethod('names<-', signature(x="big.data.frame", value="character"),
+          function(x, value) {
+            if (!options()$bigmemory.allow.dimnames)
+              warning("Descriptor file (if applicable) is not modified.\n")
+            names(x@data) <- value
+            x@desc$names <- value
+            return(x)
+          })
+
+#' @title Generic function is.big.data.frame()
+#' @description Do we have a \code{\link{big.data.frame}}?
+#' @details No further detail is needed.
+#' @param x a \code{\link{big.data.frame}} combination of big.matrix 
+#'  and big.char objects
+#' @author Rose Brewin
+#' @export
+setGeneric('is.big.data.frame', function(x) standardGeneric('is.big.data.frame'))
+
+#' @title Do we have a big.data.frame?
+#' @rdname big.data.frame-methods
+#' @author Rose Brewin
+#' @exportMethod is.big.data.frame
+setMethod('is.big.data.frame', signature(x='big.data.frame'),
+          function(x) return(TRUE))
+>>>>>>> 83e9cc6cb15c135848afc72a3041f1d18eee1546
 
 #
 # Get/set signatures!
