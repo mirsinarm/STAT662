@@ -175,6 +175,56 @@ setMethod('dim', signature(x="big.data.frame"),
 setMethod('length', signature(x="big.data.frame"),
   function(x) return(ncol(x)))
 
+#' @title length functionality for a big.data.frame
+#' @rdname big.data.frame-methods
+#' @param x a big.data.frame
+#' @exportMethod head.big.data.frame
+#' 
+head.big.data.frame <- function(x, n=6) {
+  if(ncol(x) > 1000) {
+    warning("Your big.data.frame has more than 1000 columns.  Only the first 999 were printed.")
+    max.col <- 999
+  }
+  else max.col <- ncol(x)
+  print(max.col)
+  if (nrow(x) < n) {
+    ans <- data.frame(x[,1:max.col])
+    colnames(ans) <- names(x@data)
+    return(ans)
+  }
+  else {
+    ans <- data.frame(x[1:n,1:max.col])
+    colnames(ans) <- names(x@data[1:max.col])
+    return(ans)
+  }
+}
+
+#' @title length functionality for a big.data.frame
+#' @rdname big.data.frame-methods
+#' @param x a big.data.frame
+#' @exportMethod tail.big.data.frame
+tail.big.data.frame <- function(x, n=6) {
+  if(ncol(x) > 1000) {
+    warning("Your big.data.frame has more than 1000 columns.  Only the first 999 were printed.")
+    max.col <- 999
+  }
+  else max.col <- ncol(x)
+  print(max.col)
+  if (nrow(x) < n) {
+    ans <- data.frame(x[,1:max.col])
+    colnames(ans) <- names(x@data[1:max.col])
+    return(ans)
+  }
+  else {
+    end <- nrow(x)  
+    ans <- data.frame(x[(end-n+1):end,1:max.col])
+    rownames(ans) <- (end-n+1):end
+    colnames(ans) <- names(x@data[1:max.col])
+    return(ans)
+  }
+}
+
+
 #
 # Get/set signatures!
 #
@@ -207,16 +257,29 @@ setMethod("[",
                                  stringsAsFactors=FALSE))
           })
 
+
+#####################################################
+# Baobao
+#####################################################
+
+# Miranda:  this doesn't seem to be working — I can't set values of individual cells
+# I think the problem might be in the value[,jj] part — that pretty much assumes that you're
+# passing in a vector of the same length as (in this case) ncol(x)
+# 
 #' @rdname big.data.frame-methods
 #' @exportMethod [<-
 setMethod("[<-",
           signature(x = "big.data.frame", i="ANY", j="missing"),
           function(x, i, j, ..., value) {
             #cat("BDF set:(ANY,missing,missing)\n")
-            for (jj in 1:ncol(x)) x@data[[jj]][i] <- value[,jj]
-            return(x)
+#             print(length(value))
+            for (jj in 1:ncol(x)) {
+              x@data[[jj]][i] <- value[jj]
+              return(x)
+            }
           })
 
+# Miranda:  this DOES seem to work
 #' @rdname big.data.frame-methods
 #' @exportMethod [
 setMethod("[",
@@ -231,13 +294,18 @@ setMethod("[",
                                  stringsAsFactors=FALSE))
           })
 
+
+# Miranda:  I think the reason this doesn't work is the same as the above (the value[,jj] bit)
 #' @rdname big.data.frame-methods
 #' @exportMethod [<-
 setMethod("[<-",
           signature(x = "big.data.frame", i="missing", j="ANY"),
           function(x, i, j, ..., value) {
             #cat("BDF set:(missing,ANY,missing)\n")
-            return("Not done")
+              for (jj in 1:nrow(x)) {
+                x@data[[jj]][i] <- value[,jj]
+                return(x)
+              }
           })
 
 #' @rdname big.data.frame-methods
@@ -269,3 +337,19 @@ setMethod("[",
             return(as.data.frame(lapply(x@data, function(a) a[]),
                                  stringsAsFactors=FALSE))
           })
+
+
+
+#' @rdname big.data.frame-methods
+#' @exportMethod $
+setMethod("$", "big.data.frame",
+          function(x, name)
+          {
+            ## 'name' is a character(1)
+            if(nrow(x) > 1000) {
+              print("Warning:  printing too many rows.")
+            }
+            else return(slot(x, 'data')[[name]][])
+          })
+
+
