@@ -176,10 +176,12 @@ setMethod('length', signature(x="big.data.frame"),
   function(x) return(ncol(x)))
 
 <<<<<<< HEAD
+
 #' @title length functionality for a big.data.frame
+#' @author Miranda Sinnott-Armstrong
 #' @rdname big.data.frame-methods
 #' @param x a big.data.frame
-#' @exportMethod head.big.data.frame
+#' @export head.big.data.frame
 #' 
 head.big.data.frame <- function(x, n=6) {
   if(ncol(x) > 1000) {
@@ -187,7 +189,6 @@ head.big.data.frame <- function(x, n=6) {
     max.col <- 999
   }
   else max.col <- ncol(x)
-  print(max.col)
   if (nrow(x) < n) {
     ans <- data.frame(x[,1:max.col])
     colnames(ans) <- names(x@data)
@@ -201,16 +202,16 @@ head.big.data.frame <- function(x, n=6) {
 }
 
 #' @title length functionality for a big.data.frame
+#' @author Miranda Sinnott-Armstrong
 #' @rdname big.data.frame-methods
 #' @param x a big.data.frame
-#' @exportMethod tail.big.data.frame
+#' @export tail.big.data.frame
 tail.big.data.frame <- function(x, n=6) {
   if(ncol(x) > 1000) {
     warning("Your big.data.frame has more than 1000 columns.  Only the first 999 were printed.")
     max.col <- 999
   }
   else max.col <- ncol(x)
-  print(max.col)
   if (nrow(x) < n) {
     ans <- data.frame(x[,1:max.col])
     colnames(ans) <- names(x@data[1:max.col])
@@ -339,21 +340,29 @@ setMethod("[",
 # Baobao
 #####################################################
 
-# Miranda:  this doesn't seem to be working — I can't set values of individual cells
-# I think the problem might be in the value[,jj] part — that pretty much assumes that you're
-# passing in a vector of the same length as (in this case) ncol(x)
-# 
 #' @rdname big.data.frame-methods
+#' @author Miranda Sinnott-Armstrong
 #' @exportMethod [<-
 setMethod("[<-",
           signature(x = "big.data.frame", i="ANY", j="missing"),
           function(x, i, j, ..., value) {
-            #cat("BDF set:(ANY,missing,missing)\n")
-#             print(length(value))
-            for (jj in 1:ncol(x)) {
-              x@data[[jj]][i] <- value[jj]
-              return(x)
+            # Edge cases:
+            #  y[-2,]
+            if(sum(i < 0)) {
+              stop("Warning: index is negative.  Haven't coded this yet.")
             }
+            
+            #  y[2:3,]
+            # This works fine.
+            
+            #cat("BDF set:(ANY,missing,missing)\n")
+            
+            # repeat value so that it is the same length as the number of cols
+            val <- rep(value, length.out=ncol(x))
+            for (jj in 1:ncol(x)) {
+              x@data[[jj]][i] <- val[jj]
+            }
+            return(x)
           })
 
 # Miranda:  this DOES seem to work
@@ -372,18 +381,25 @@ setMethod("[",
           })
 
 
-# Miranda:  I think the reason this doesn't work is the same as the above (the value[,jj] bit)
 #' @rdname big.data.frame-methods
+#' @author Miranda Sinnott-Armstrong
 #' @exportMethod [<-
 setMethod("[<-",
           signature(x = "big.data.frame", i="missing", j="ANY"),
           function(x, i, j, ..., value) {
+            # Edge cases:
+            #  y[-2,]
+            if(sum(j < 0)) {
+              stop("Warning: index is negative.  Haven't coded this yet.")
+            }
             #cat("BDF set:(missing,ANY,missing)\n")
-              for (jj in 1:nrow(x)) {
-                x@data[[jj]][i] <- value[,jj]
-                return(x)
-              }
+            val <- rep(value, length.out=nrow(x))
+            for (jj in 1:nrow(x)) {
+              x@data[[j]][jj] <- val[jj]
+            }
+            return(x)
           })
+
 
 #' @rdname big.data.frame-methods
 #' @exportMethod [
@@ -418,6 +434,7 @@ setMethod("[",
 
 
 #' @rdname big.data.frame-methods
+#' @author Miranda Sinnott-Armstrong
 #' @exportMethod $
 setMethod("$", "big.data.frame",
           function(x, name)
@@ -429,4 +446,15 @@ setMethod("$", "big.data.frame",
             else return(slot(x, 'data')[[name]][])
           })
 
+#' @rdname big.data.frame-methods
+#' @author Miranda Sinnott-Armstrong
+#' @exportMethod $<-
+setMethod("$<-", "big.data.frame",
+          function(x, name, value)
+          {
+            ## 'name' is a character(1)
+            val <- rep(value, length.out=nrow(x))
+            x@data[[name]] <- val
+            return(x)
+          })
 
