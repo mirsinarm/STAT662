@@ -458,3 +458,33 @@ setMethod("$<-", "big.data.frame",
             return(x)
           })
 
+#
+# Removing columns from a big.data.frame
+#
+
+#' @title Remove columns from an existing \code{\link{big.data.frame}}
+#' @return a new \code{\link{big.data.frame}} object, with fewer columns
+#' @param x a big.data.frame object
+#' @param index a vector of indices or names of the columns to be removed
+#' @author Rose Brewin
+#' @export
+drop.cols <- function(x, index) {
+  if (is.character(index)) {
+    index <- which(x@desc$names %in% index)
+  }  
+  if (any(index > ncol(x) | index <= 0)) {
+    stop("Index out of bounds")
+  } else if (length(unique(index)) >= ncol(x)) {
+    stop("Index is entire big data frame")
+  } 
+  ans <- big.data.frame(nrow=x@desc$dim[1],
+                        classes=x@desc$classes[-index],
+                        location=NULL,
+                        names=x@desc$names[-index],
+                        maxchar=x@desc$maxchar[-index],
+                        init=NULL)
+  ans@data <- x@data[-index]
+  return(ans)
+}
+
+
