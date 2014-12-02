@@ -500,3 +500,37 @@ drop.cols <- function(x, index) {
 }
 
 
+
+#' @title Convert a \code{\link{big.matrix}} object to a \code{\link{big.data.frame}} object
+#' @return a new \code{\link{big.data.frame}} object
+#' @param x a big.matrix object
+#' @author Miranda Sinnott-Armstrong
+#' @export
+as.big.data.frame <- function(x, names=NULL) {
+  if(class(x) != "big.matrix") {
+    stop ("Only converts big.matrix objects to a big.data.frame object.")
+  }
+  ans <- big.data.frame(nrow=nrow(x),
+                 classes=rep(typeof(x), ncol(x)),
+                 location=NULL,
+                 names=names,
+                 init=NULL)
+
+  for(i in 1:ncol(x)) {
+    ans[, i] <- x[, i]
+  }
+  
+  if(!is.null(names)) {
+    
+    ###  This causes a warning: Descriptor file (if applicable) is not modified.
+    ###  However, I modified the descriptor file by hand.
+    ###  So the question is, either 1) suppress the warning, or 2) change the 
+    ###      names() function to modify the descriptor file.
+    
+    names(ans) <- names
+    ans@desc$names <- names
+  }
+  
+  return(ans)
+}
+
