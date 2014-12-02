@@ -510,6 +510,37 @@ drop.cols <- function(x, index) {
   return(ans)
 }
 
+#
+# Adding an extra column
+#
+
+#' @title Add an extra column to an existing \code{\link{big.data.frame}}
+#' @return a new \code{\link{big.data.frame}} object, with one extra column
+#' @param x a big.data.frame object
+#' @param new.col either a big.char object or a big.matrix object
+#'  with a single column
+#' @param after the position after which new.col will be appear
+#' @export
+add.col <- function(x, new.col, after, new.name) {
+  if ((after > ncol(x)) | (after < 0) |
+        !is.numeric(after) | (!length(after) == 1)) {
+    stop("after parameter is out of bounds")
+  }
+  
+  if (class(new.col) == "big.matrix") new.class <- "double"
+  else if (class(new.col) == "big.char") new.class <- "char"
+  else stop ("new.col must be either a big.matrix or big.char object")
+  
+  new.classes <- append(x@desc$classes, new.class, after=after)
+  new.names <- append(x@desc$names, new.name, after=after)
+  new.data <- append(x@data[], new.col, after=after)
+  names(new.data) <- new.names
+  
+  ans <- big.data.frame(x@desc$dim[1], classes=new.classes, names=new.names)
+  ans@data <- new.data
+  return(ans)
+}
+
 
 
 #' @title Convert a \code{\link{big.matrix}} object to a \code{\link{big.data.frame}} object
