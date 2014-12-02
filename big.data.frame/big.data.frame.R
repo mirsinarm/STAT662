@@ -348,14 +348,12 @@ setMethod("[<-",
           function(x, i, j, ..., value) {
             # Edge cases:
             #  y[-2,]
-            if(sum(i < 0)) {
-              stop("Warning: index is negative.  Haven't coded this yet.")
+            if(any(i < 0)) {
+              stop("Warning: index is negative.  Not sure what you think this will do.")
             }
-            
-            #  y[2:3,]
-            # This works fine.
-            
-            #cat("BDF set:(ANY,missing,missing)\n")
+
+            # To code:  if the classes change
+            # check for each item in the row
             
             # repeat value so that it is the same length as the number of cols
             val <- rep(value, length.out=ncol(x))
@@ -401,8 +399,14 @@ setMethod("[<-",
             # Edge cases:
             #  x[-2,]
             if(sum(j < 0)) {
-              stop("Warning: index is negative.  Haven't coded this yet.")
+              stop("Warning: index is negative.  Not sure what this should do.")
             }
+            
+            # To code:  when the class changes for that column
+#             if(typeof(x[1, j]) != typeof(value)
+           # same as in the $-setting
+                 
+            
             #cat("BDF set:(missing,ANY,missing)\n")
             val <- rep(value, length.out=nrow(x))
             for (jj in 1:nrow(x)) {
@@ -464,6 +468,13 @@ setMethod("$", "big.data.frame",
 setMethod("$<-", "big.data.frame",
           function(x, name, value)
           {
+            
+            
+            # To code:  when the class changes for that column
+            #             if(typeof(x[1, j]) != typeof(value)
+
+            
+            
             ## 'name' is a character(1)
             val <- rep(value, length.out=nrow(x))
             x@data[[name]] <- val
