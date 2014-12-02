@@ -365,20 +365,31 @@ setMethod("[<-",
             return(x)
           })
 
-# Miranda:  this DOES seem to work
+
 #' @rdname big.data.frame-methods
 #' @exportMethod [
 setMethod("[",
-          signature(x = "big.data.frame", i="missing", j="ANY", drop="missing"),
-          function(x, i, j, ..., drop) {
-            #cat("BDF get:(missing,ANY,missing)\n")
-            # Consider simplifying depending on factor issue, eventually:
-            if (length(j)==1) return(as.data.frame(x@data[[j]][],
-                                                   stringsAsFactors=FALSE)[[1]])
-            # Otherwise, multiple column extraction:
-            return(as.data.frame(lapply(x@data[j], function(a) a[]),
-                                 stringsAsFactors=FALSE))
-          })
+signature(x = "big.data.frame", i="missing", j="ANY", drop="missing"),
+    function(x, i, j, ..., drop) {
+    #cat("BDF get:(missing,ANY,missing)\n")
+        n <- names(x)[j]
+        
+        # Otherwise, multiple column extraction:
+        return(as.data.frame(lapply(x@data[n], function(a) a[]),
+        stringsAsFactors=FALSE))
+        
+        
+        ####  This is what Jay wrote, so I commented it out in case
+        ####  we wanted to keep it:
+        
+        #             # Consider simplifying depending on factor issue, eventually:
+        #             if (length(j)==1) return(as.data.frame(x@data[[j]][],
+        #                                                    stringsAsFactors=FALSE)[[1]])
+        #             # Otherwise, multiple column extraction:
+        #             return(as.data.frame(lapply(x@data[j], function(a) a[]),
+        #                                  stringsAsFactors=FALSE))
+    })
+
 
 
 #' @rdname big.data.frame-methods
@@ -388,7 +399,7 @@ setMethod("[<-",
           signature(x = "big.data.frame", i="missing", j="ANY"),
           function(x, i, j, ..., value) {
             # Edge cases:
-            #  y[-2,]
+            #  x[-2,]
             if(sum(j < 0)) {
               stop("Warning: index is negative.  Haven't coded this yet.")
             }
@@ -404,20 +415,22 @@ setMethod("[<-",
 #' @rdname big.data.frame-methods
 #' @exportMethod [
 setMethod("[",
-          signature(x = "big.data.frame", i="missing", j="ANY", drop="logical"),
-          function(x, i, j, ..., drop) {
-            #cat("BDF get:(missing,ANY,ANY)\n")
-            if (length(j)==1) {
-              if (!drop) {
-                ans <- as.data.frame(x@data[[j]][], stringsAsFactors=FALSE)
-                names(ans) <- names(x@data)[j]
-                return(ans)
-              } # else drop==TRUE next with one column:
-              return(as.data.frame(x@data[[j]][], stringsAsFactors=FALSE)[[1]])
-            } # and otherwise we have multiple columns to extract:
-            return(as.data.frame(lapply(x@data[j], function(a) a[]),
-                                 stringsAsFactors=FALSE))
-          })
+signature(x = "big.data.frame", i="missing", j="ANY", drop="logical"),
+    function(x, i, j, ..., drop) {
+        #cat("BDF get:(missing,ANY,ANY)\n")
+        n <- names(x)[j]
+        #             if (length(j)==1) {
+        #               if (!drop) {
+        #                 ans <- as.data.frame(x@data[[j]][], stringsAsFactors=FALSE)
+        #                 names(ans) <- names(x@data)[j]
+        #                 return(ans)
+        #               } # else drop==TRUE next with one column:
+        #               return(as.data.frame(x@data[[j]][], stringsAsFactors=FALSE)[[1]])
+        #             } # and otherwise we have multiple columns to extract:
+        return(as.data.frame(lapply(x@data[n], function(a) a[]),
+        stringsAsFactors=FALSE))
+    })
+
 
 #' @rdname big.data.frame-methods
 #' @exportMethod [
@@ -430,7 +443,6 @@ setMethod("[",
             return(as.data.frame(lapply(x@data, function(a) a[]),
                                  stringsAsFactors=FALSE))
           })
-
 
 
 #' @rdname big.data.frame-methods
